@@ -503,6 +503,15 @@ async def _handle_feishu_file(db, agent_id, config, message, sender_open_id, cha
         print(f"[Feishu] Saved {msg_type} to {save_path} ({len(file_bytes)} bytes)")
     except Exception as e:
         print(f"[Feishu] Failed to download {msg_type}: {e}")
+        err_tip = "抱歉，文件下载失败。可能原因：机器人缺少 `im:resource` 权限（文件读取）。\n请在飞书开放平台 → 权限管理 → 批量导入权限 JSON → 重新发布机器人版本后重试。"
+        try:
+            import json as _j
+            if chat_type == "group" and chat_id:
+                await feishu_service.send_message(config.app_id, config.app_secret, chat_id, "text", _j.dumps({"text": err_tip}), receive_id_type="chat_id")
+            else:
+                await feishu_service.send_message(config.app_id, config.app_secret, sender_open_id, "text", _j.dumps({"text": err_tip}))
+        except Exception as e2:
+            print(f"[Feishu] Also failed to send error tip: {e2}")
         return
 
     # Resolve platform user and session using a fresh db session
