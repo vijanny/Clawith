@@ -17,3 +17,9 @@ venv/
 backend/data/
 backend/agent_data/
 ss-nodes.json
+
+# Ignore Antigravity / Claude Code agent configurations
+.agent/
+.agents/
+_agent/
+_agents/
